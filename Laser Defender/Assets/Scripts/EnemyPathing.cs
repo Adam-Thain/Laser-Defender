@@ -8,12 +8,7 @@ public class EnemyPathing : MonoBehaviour {
     /// <summary>
     /// WaveConfig
     /// </summary>
-    [SerializeField] WaveConfig waveConfig;
-
-    /// <summary>
-    /// Movement speed
-    /// </summary>
-    [SerializeField] private float moveSpeed = 2f;
+    WaveConfig waveConfig;
 
     /// <summary>
     /// Current number of waypoints
@@ -55,6 +50,14 @@ public class EnemyPathing : MonoBehaviour {
     }
 
     /// <summary>
+    /// 
+    /// </summary>
+    public void SetWaveConfig(WaveConfig waveConfig)
+    {
+        this.waveConfig = waveConfig;
+    }
+
+    /// <summary>
     /// Move enemy ship to each waypoint
     /// </summary>
     private void Move()
@@ -67,7 +70,7 @@ public class EnemyPathing : MonoBehaviour {
             var targetPosition = waypoints[waypointIndex].transform.position;
 
             // Get the movement frame
-            var movementThisFrame = moveSpeed * Time.deltaTime;
+            var movementThisFrame = waveConfig.GetMoveSpeed() * Time.deltaTime;
 
             // Get the transform position
             transform.position = Vector2.MoveTowards
