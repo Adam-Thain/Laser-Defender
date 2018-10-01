@@ -123,8 +123,8 @@ public class Player : MonoBehaviour {
         // Get the new Y transform position
         var newYPos = Mathf.Clamp(transform.position.y + deltaY, yMin, yMax);
 
-        // Set position to new vector 2
-        transform.position = new Vector2(newXPos, newYPos);
+        // Set position to new vector 3
+        transform.position = new Vector3(newXPos, newYPos,-5);
     }
 
     /// <summary>
