@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class Player : MonoBehaviour {
 
     #region Private Members
+
+    [Header("Player Movement")]
 
     /// <summary>
     /// Player movement speed
@@ -14,6 +17,33 @@ public class Player : MonoBehaviour {
     /// Padding
     /// </summary>
     [SerializeField] private float padding = 1f;
+
+    /// <summary>
+    /// Player Health
+    /// </summary>
+    [SerializeField] private int health = 200;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private AudioClip deathSound;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] [Range(0, 1)] private float deathSoundVolume = 0.75f;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private AudioClip shootSound;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] [Range(0, 1)] private float shootSoundVolume = 0.25f;
+
+    [Header("Projectile")]
 
     /// <summary>
     /// Projectile Speed
@@ -82,6 +112,55 @@ public class Player : MonoBehaviour {
 
         // Call Fire method
         Fire();
+    }
+
+    /// <summary>
+    /// When a trigger enters this objects collider
+    /// </summary>
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Get the damage dealer component
+        DamageDealer damageDealer = other.gameObject.GetComponent<DamageDealer>();
+
+        // If there is no damage dealer class, return
+        if (!damageDealer) { return; }
+
+        // Call process hit method using damage dealer
+        ProcessHit(damageDealer);
+    }
+
+    /// <summary>
+    /// Process hits by projectiles
+    /// </summary>
+    /// <param name="damageDealer"></param>
+    private void ProcessHit(DamageDealer damageDealer)
+    {
+        // Minus health by the amound specified in the damage dealer class
+        health -= damageDealer.GetDamage();
+
+        // Call damage dealer hit method
+        damageDealer.Hit();
+
+        // If the enemy health reaches zero
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void Die()
+    {
+        //
+        FindObjectOfType<Level>().LoadGameOver();
+
+        // Destroy the enemy ship
+        Destroy(gameObject);
+
+        //
+        AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position, deathSoundVolume);
     }
 
     /// <summary>
@@ -156,6 +235,9 @@ public class Player : MonoBehaviour {
 
             // Add movement to the laser
             laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, projectileSpeed);
+
+            //
+            AudioSource.PlayClipAtPoint(shootSound, Camera.main.transform.position, shootSoundVolume);
 
             yield return new WaitForSeconds(projectileFiringPeriod);
         }

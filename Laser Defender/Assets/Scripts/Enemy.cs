@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
@@ -34,6 +35,36 @@ public class Enemy : MonoBehaviour {
     /// </summary>
     [SerializeField] private float projectileSpeed = 10f;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private GameObject deathVFX;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private float durationOfExplosion = 1f;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private AudioClip deathSound;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] [Range(0,1)] private float deathSoundVolume = 0.75f;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private AudioClip shootSound;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] [Range(0, 1)] private float shootSoundVolume = 0.25f;
+
     #endregion
 
     #region Constructor
@@ -44,7 +75,7 @@ public class Enemy : MonoBehaviour {
     private void Start()
     {
         //
-        shotCounter = Random.Range(minTimeBetweenShots, maxTimeBetweenShots);
+        shotCounter = UnityEngine.Random.Range(minTimeBetweenShots, maxTimeBetweenShots);
     }
 
     #endregion
@@ -75,7 +106,7 @@ public class Enemy : MonoBehaviour {
             Fire();
 
             //
-            shotCounter = Random.Range(minTimeBetweenShots, maxTimeBetweenShots);
+            shotCounter = UnityEngine.Random.Range(minTimeBetweenShots, maxTimeBetweenShots);
         }
     }
 
@@ -93,35 +124,61 @@ public class Enemy : MonoBehaviour {
 
         //
         laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -projectileSpeed);
+
+        //
+        AudioSource.PlayClipAtPoint(shootSound, Camera.main.transform.position, shootSoundVolume);
     }
 
     /// <summary>
-    /// 
+    /// When a trigger enters this objects collider
     /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //
+        // Get the damage dealer component
         DamageDealer damageDealer = other.gameObject.GetComponent<DamageDealer>();
 
-        //
+        // If there is no damage dealer class, return
+        if (!damageDealer) { return; }
+
+        // Call process hit method using damage dealer
         ProcessHit(damageDealer);
     }
 
     /// <summary>
-    /// 
+    /// Process hits by projectiles
     /// </summary>
     /// <param name="damageDealer"></param>
     private void ProcessHit(DamageDealer damageDealer)
     {
-        //
+        // Minus health by the amound specified in the damage dealer class
         health -= damageDealer.GetDamage();
 
-        //
+        // Call damage dealer hit method
+        damageDealer.Hit();
+
+        // If the enemy health reaches zero
         if (health <= 0)
         {
-            //
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    /// <summary>
+    /// Kill method
+    /// </summary>
+    private void Die()
+    {
+        // Destroy the enemy ship
+        Destroy(gameObject);
+
+        //
+        GameObject explosion = Instantiate(deathVFX, transform.position,transform.rotation) as GameObject;
+
+        //
+        Destroy(explosion, durationOfExplosion);
+
+        //
+        AudioSource.PlayClipAtPoint(deathSound,Camera.main.transform.position, deathSoundVolume);
     }
 
     #endregion
