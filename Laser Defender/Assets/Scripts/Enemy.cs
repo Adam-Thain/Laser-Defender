@@ -5,10 +5,19 @@ public class Enemy : MonoBehaviour {
 
     #region Private Members
 
+    [Header("Enemy Stats")]
+
     /// <summary>
     /// 
     /// </summary>
-    [SerializeField] private float health = 100;
+    [SerializeField] private float health = 100f;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [SerializeField] private int scoreValue = 150;
+
+    [Header("Shooting")]
 
     /// <summary>
     /// 
@@ -34,6 +43,8 @@ public class Enemy : MonoBehaviour {
     /// 
     /// </summary>
     [SerializeField] private float projectileSpeed = 10f;
+
+    [Header("Sound Effects")]
 
     /// <summary>
     /// 
@@ -168,6 +179,9 @@ public class Enemy : MonoBehaviour {
     /// </summary>
     private void Die()
     {
+        //
+        FindObjectOfType<GameSession>().AddToScore(scoreValue);
+
         // Destroy the enemy ship
         Destroy(gameObject);
 

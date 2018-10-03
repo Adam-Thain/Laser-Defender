@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +22,17 @@ public class Level : MonoBehaviour {
 	public void Loadgame()
     {
         SceneManager.LoadScene("Game");
+
+        //
+        //
+        if (FindObjectOfType<GameSession>())
+        {
+            FindObjectOfType<GameSession>().ResetGame();
+        }
+        else
+        {
+            return;
+        }
     }
 
     /// <summary>

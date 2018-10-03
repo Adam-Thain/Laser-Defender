@@ -244,4 +244,17 @@ public class Player : MonoBehaviour {
     }
 
     #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Get the health of the player ship
+    /// </summary>
+    /// <returns></returns>
+    public int GetHealth()
+    {
+        return health;
+    }
+
+    #endregion
 }
